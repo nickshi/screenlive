@@ -579,9 +579,9 @@
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem title="View" id="H8h-7b-M4v">
+                            <menuItem title="Capture" id="H8h-7b-M4v">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="View" id="HyV-fh-RgO">
+                                <menu key="submenu" title="Capture" id="HyV-fh-RgO">
                                     <items>
                                         <menuItem title="Capture" keyEquivalent="C" id="snW-S8-Cw5">
                                             <connections>
@@ -594,7 +594,7 @@
                                                 <action selector="captureEndMenuItemSelect:" target="Voe-Tx-rLC" id="sAh-3a-cmM"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Parse" id="xX9-MY-d4a">
+                                        <menuItem title="Play" id="xX9-MY-d4a">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="parse:" target="Voe-Tx-rLC" id="O6l-kA-j9t"/>
