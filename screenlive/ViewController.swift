@@ -24,11 +24,11 @@ class ViewController: NSViewController {
     }
     
     override func viewWillLayout() {
-        print("viewWillLayout")
+        
     }
     
     override func viewDidLayout() {
-        print("viewDidLayout")
+        
         self.screenPlayer.frame = self.view.bounds
     }
     

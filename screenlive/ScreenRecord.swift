@@ -37,7 +37,7 @@ class ScreenRecord:NSObject {
         curSecond = 0
         
         
-         timer = NSTimer.scheduledTimerWithTimeInterval(0.05, target: self, selector: "captureScreen", userInfo: nil, repeats: true)
+         timer = NSTimer.scheduledTimerWithTimeInterval(0.05, target: self, selector: #selector(ScreenRecord.captureScreen), userInfo: nil, repeats: true)
     }
     
     func endRecord() {
@@ -67,9 +67,9 @@ class ScreenRecord:NSObject {
             self.saveNSImageAsFrame(nscapturedImage, second: self.curSecond)
             
             
-            curSecond++
+            curSecond += 1
             
-            print("\(curSecond)")
+            
         }
     }
     
@@ -86,7 +86,13 @@ class ScreenRecord:NSObject {
             
             var length = imageData!.length
             
-            let tile = ScreenTile(grid: idx)
+            let row:Int = idx / 8
+            let column:Int = idx % 8
+            
+            var grid_2:Int = row<<4
+            grid_2 = grid_2 | column
+            
+            let tile = ScreenTile(grid: grid_2)
             
             tile.length = length
             
@@ -97,17 +103,19 @@ class ScreenRecord:NSObject {
             var sec:UInt16 = UInt16(second)
             indexData!.appendBytes(&sec, length: 2)
             
-            var grid:UInt8 = UInt8(idx)
+            var grid:UInt8 = UInt8(grid_2)
             indexData!.appendBytes(&grid, length: 1)
             
             
             if let prevFrame = lastFrame {
                 let prevTile = prevFrame.tiles[idx]
-                let isChange = prevTile?.imageData?.isEqualToData(imageData!)
-                
-                if isChange == true {
+                let isSame = prevTile?.imageData?.isEqualToData(tile.imageData!)
+                //print("isSame \(idx) \(isSame)")
+                if isSame == true {
                     indexData!.appendBytes(&(prevTile!.offset), length: 4)
                     tile.offset = prevTile!.offset
+                    
+                    
                 }
                 else
                 {
@@ -115,6 +123,8 @@ class ScreenRecord:NSObject {
                     imagesData!.appendBytes((imageData?.bytes)!, length: length)
                     tile.offset = curOffsetIndex
                     curOffsetIndex += length
+                    
+                    //print("\(idx)")
                 }
                 
             }

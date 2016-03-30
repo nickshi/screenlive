@@ -18,68 +18,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
+        
+        let statusItem =  NSStatusBar.systemStatusBar().statusItemWithLength(NSVariableStatusItemLength)
+        statusItem.button?.image = NSImage(named: "player_record_start.png")
+//        statusItem.highlightMode = true
+//        statusItem.action = #selector(AppDelegate.recordStatusItemSelected)
+//        statusItem.target = self
+    }
+    
+    
+    func recordStatusItemSelected(){
+        
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
         // Insert code here to tear down your application
     }
-    
-    
-    
-    func captureScreen()-> Void{
-        
-        let savePanel: NSSavePanel = NSSavePanel()
-        savePanel.allowedFileTypes = ["png"]
-        if savePanel.runModal() == NSFileHandlingPanelOKButton{
-            
-            print("NSFileHandlingPanelOKButton")
-            
-            let image:CGImageRef? = CGDisplayCreateImage(CGMainDisplayID())
-            
-            
-            
-            if let savedImage = image {
-                
-                let app = NSApplication.sharedApplication()
-                
-                let window: NSWindow = app.windows[0]
-                
-                let viewController = window.contentViewController as! ViewController
-                
-                let nImage = NSImage(CGImage: savedImage,size: NSSize(width: CGFloat(CGImageGetWidth(image)), height: CGFloat(CGImageGetHeight(image))))
-                
-                viewController.imageView.image = nImage
-                
-                for index in 0...63 {
-                    let pieceOfImage = nImage[index]
-                    
-                    let npImage = NSImage(CGImage: pieceOfImage!,size: NSSize(width: CGFloat(CGImageGetWidth(pieceOfImage)), height: CGFloat(CGImageGetHeight(pieceOfImage))))
-                    
-                    
-                    let finalPath = savePanel.URL!.path!
-                    
-                    let idx = finalPath.characters.indexOf(".")
-                    
-                    let path = finalPath.substringToIndex(idx!)
-                    
-                    let ext = finalPath.substringFromIndex(idx!)
-                    
-                    let savePath = path + "\(index)" + ext
-                    
-                    print("\(savePath)")
-                  
-                    saveImage(npImage.CGImage!, path: savePath)
-                }
- 
-                
-            }
-           
-            
-        }
-        
-    }
-    
-    
+
     
     @IBAction func captureMenuItemSelect(sender: NSMenuItem){
 
@@ -119,7 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         viewController.screenPlayer.loadScreenShot(screenShot!)
         
-        NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "Play", userInfo: self, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: #selector(AppDelegate.Play), userInfo: self, repeats: true)
 
     }
 
@@ -135,7 +90,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         viewController.screenPlayer.play(curSecond)
         
-        curSecond++;
+        curSecond += 1;
         
         curSecond = max(0, min(curSecond, (screenShot?.seconds.count)!-1))
         

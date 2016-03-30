@@ -45,19 +45,21 @@ class ScreenTile : NSCoding {
         data.getBytes(&_offset, range: NSMakeRange(offset + 3, 4))
         data.getBytes(&_length, range: NSMakeRange(offset + 7, 4))
         self.timestamp = Int(_timestamp)
-        self.row = Int(_grid >> 3)
-        self.col = Int(_grid & 0o7)
+        self.row = Int(_grid >> 4)
+        self.col = Int(_grid & 0xf)
         self.grid = self.row * 8 + self.col // 8 x 8
         self.length = Int(_length)
         self.offset = Int(_offset)
+        
+        
         
     }
     
     
     init(grid: Int) {
-        self.row = grid / 8
-        self.col = grid % 8
-        self.grid = grid
+        self.row = Int(grid >> 4)
+        self.col = Int(grid & 0xf)
+        self.grid = self.row * 8 + self.col // 8 x 8
     }
     
     @objc func encodeWithCoder(coder: NSCoder) {

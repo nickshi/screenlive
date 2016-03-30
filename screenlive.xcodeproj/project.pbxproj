@@ -20,6 +20,8 @@
 		01AF34D91C96A880002A4101 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 01AF34D81C96A880002A4101 /* libz.tbd */; };
 		01AF34DB1C979220002A4101 /* ScreenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AF34DA1C979220002A4101 /* ScreenRecord.swift */; };
 		01FB956A1C97EB0200EABC7A /* ScreenPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FB95691C97EB0200EABC7A /* ScreenPlayer.swift */; };
+		7D2F10C31CAC71B3008788C1 /* player_record_start@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D2F10C21CAC71B3008788C1 /* player_record_start@2x.png */; };
+		7D2F10C51CAC71BC008788C1 /* player_record_stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D2F10C41CAC71BC008788C1 /* player_record_stop@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,8 @@
 		01AF34D81C96A880002A4101 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		01AF34DA1C979220002A4101 /* ScreenRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenRecord.swift; sourceTree = "<group>"; };
 		01FB95691C97EB0200EABC7A /* ScreenPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenPlayer.swift; sourceTree = "<group>"; };
+		7D2F10C21CAC71B3008788C1 /* player_record_start@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player_record_start@2x.png"; sourceTree = "<group>"; };
+		7D2F10C41CAC71BC008788C1 /* player_record_stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player_record_stop@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +116,7 @@
 		018D78A21C8127C000293648 /* screenlive */ = {
 			isa = PBXGroup;
 			children = (
+				7D2F10C11CAC7185008788C1 /* resources */,
 				01AF34D51C9669EE002A4101 /* NSDataExtension.swift */,
 				018D78A31C8127C000293648 /* AppDelegate.swift */,
 				018D78A51C8127C000293648 /* ViewController.swift */,
@@ -144,6 +149,15 @@
 				018D78C21C8127C000293648 /* Info.plist */,
 			);
 			path = screenliveUITests;
+			sourceTree = "<group>";
+		};
+		7D2F10C11CAC7185008788C1 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				7D2F10C41CAC71BC008788C1 /* player_record_stop@2x.png */,
+				7D2F10C21CAC71B3008788C1 /* player_record_start@2x.png */,
+			);
+			name = resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -250,6 +264,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D2F10C51CAC71BC008788C1 /* player_record_stop@2x.png in Resources */,
+				7D2F10C31CAC71B3008788C1 /* player_record_start@2x.png in Resources */,
 				018D78A81C8127C000293648 /* Assets.xcassets in Resources */,
 				018D78AB1C8127C000293648 /* Main.storyboard in Resources */,
 			);
