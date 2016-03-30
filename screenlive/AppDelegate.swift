@@ -10,25 +10,43 @@ import Cocoa
 
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
     
     var curSecond:Int = 0
     var screenShot:ScreenShot?
     var recordScreen:ScreenRecord?
+    var statusItem: NSStatusItem?;
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
         
-        let statusItem =  NSStatusBar.systemStatusBar().statusItemWithLength(NSVariableStatusItemLength)
-        statusItem.button?.image = NSImage(named: "player_record_start.png")
-//        statusItem.highlightMode = true
-//        statusItem.action = #selector(AppDelegate.recordStatusItemSelected)
-//        statusItem.target = self
+        statusItem =  NSStatusBar.systemStatusBar().statusItemWithLength(NSVariableStatusItemLength)
+        statusItem!.button?.image = NSImage(named: "player_record_start")
+        statusItem!.highlightMode = true
+        statusItem!.action = #selector(AppDelegate.recordStatusItemSelected)
+        statusItem!.target = self
+        
+        recordScreen = ScreenRecord()
+        recordScreen?.recordDelegate = self
     }
     
     
     func recordStatusItemSelected(){
-        
+        if recordScreen?.recording == true {
+            recordScreen?.endRecord()
+        }
+        else
+        {
+            recordScreen?.beginRecord()
+        }
+    }
+    
+    func screenRecordBegin() {
+        statusItem!.button?.image = NSImage(named: "player_record_stop")
+    }
+    
+    func screenRecordEnd() {
+        statusItem!.button?.image = NSImage(named: "player_record_start")
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
@@ -38,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @IBAction func captureMenuItemSelect(sender: NSMenuItem){
 
-        recordScreen = ScreenRecord()
+        
         recordScreen?.beginRecord()
     }
     
