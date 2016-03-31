@@ -11,6 +11,7 @@ import Cocoa
 protocol ScreenRecordDelegate {
     func screenRecordBegin()
     func screenRecordEnd()
+    func screenRecordTimeDuration(duration:Int)
 }
 
 class ScreenRecord:NSObject {
@@ -45,7 +46,7 @@ class ScreenRecord:NSObject {
         curSecond = 0
         curOffsetIndex = 0
         recording = true
-        timer = NSTimer.scheduledTimerWithTimeInterval(0.05, target: self, selector: #selector(ScreenRecord.captureScreen), userInfo: nil, repeats: true)
+        timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ScreenRecord.captureScreen), userInfo: nil, repeats: true)
         
         recordDelegate?.screenRecordBegin()
     }
@@ -80,7 +81,7 @@ class ScreenRecord:NSObject {
             
             
             curSecond += 1
-            
+            recordDelegate?.screenRecordTimeDuration(curSecond)
             
         }
     }

@@ -25,6 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
         statusItem!.highlightMode = true
         statusItem!.action = #selector(AppDelegate.recordStatusItemSelected)
         statusItem!.target = self
+        statusItem!.title = ""
         
         recordScreen = ScreenRecord()
         recordScreen?.recordDelegate = self
@@ -34,6 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
     func recordStatusItemSelected(){
         if recordScreen?.recording == true {
             recordScreen?.endRecord()
+            statusItem!.title = ""
         }
         else
         {
@@ -47,6 +49,18 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
     
     func screenRecordEnd() {
         statusItem!.button?.image = NSImage(named: "player_record_start")
+    }
+    
+    func screenRecordTimeDuration(duration: Int) {
+        statusItem!.title = formatTime(duration)
+    }
+    
+    func formatTime(second:Int) ->String{
+        let sec = second % 60
+        let min = (second / 60) % 60
+        let hr = second / 3600
+        
+        return String(format: "%.2d:%.2d:%.2d", arguments: [hr,min,sec])
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
@@ -92,7 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
         
         viewController.screenPlayer.loadScreenShot(screenShot!)
         
-        NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: #selector(AppDelegate.Play), userInfo: self, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(AppDelegate.Play), userInfo: self, repeats: true)
 
     }
 
