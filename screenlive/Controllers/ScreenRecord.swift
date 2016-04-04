@@ -173,6 +173,7 @@ class ScreenRecord:NSObject {
             
             tile.imageData = imageData
             
+            //remove the duplicate tile in sequence
             if let lastTile = pipes[idx]?.lastTile {
                 if lastTile.imageData?.isEqualToData(tile.imageData!) == false {
                    
@@ -191,7 +192,7 @@ class ScreenRecord:NSObject {
     
     private func saveTilesToLocal() {
        
-        
+        //sort the tile and process the duplicate tile
         dispatch_async(seriel_queue, { () -> Void in
             
             var dic:[NSData:[Tile]] = [NSData:[Tile]]()
@@ -204,9 +205,7 @@ class ScreenRecord:NSObject {
                     if (dic[tile.imageData!] == nil) {dic[tile.imageData!] = [Tile]()}
                     
                     dic[tile.imageData!]?.append(tile)
-                    
-                   
-                    //tile.appendTileIndexToData(self.indexData!, imagesData: self.imagesData!, offset: &self.curOffsetIndex)
+                
                 }
             }
             
@@ -228,11 +227,17 @@ class ScreenRecord:NSObject {
                 }
             }
             
-            self.indexData!.gzippedData()!.writeToFile("/Users/nick/Desktop/clip/screenindex.pak", atomically: true)
-            self.imagesData!.writeToFile("/Users/nick/Desktop/clip/screendata.pak", atomically: true)
+            let folderPath = Helper.createSnapShotDirectoryIfNoExist()
+            let indexDataPath = folderPath.stringByAppendingString("/screenindex.pak")
+            let screenDataPath = folderPath.stringByAppendingString("/screendata.pak")
+            
+            self.indexData!.gzippedData()!.writeToFile(indexDataPath, atomically: true)
+            self.imagesData!.writeToFile(screenDataPath, atomically: true)
         })
         
  
     }
+    
+
     
 }

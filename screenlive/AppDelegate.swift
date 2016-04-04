@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
         
         recordScreen = ScreenRecord()
         recordScreen?.recordDelegate = self
+        
     }
     
     
@@ -81,22 +82,14 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
     }
 
     
-    func saveImage(imageRef: CGImageRef, path: String) {
-        let url:CFURLRef = NSURL(fileURLWithPath: path)
-        
-        let destination = CGImageDestinationCreateWithURL(url, kUTTypePNG, 1, nil)
-        
-        CGImageDestinationAddImage(destination!, imageRef, nil);
-        
-        
-        if CGImageDestinationFinalize(destination!) {
-            print("image saved successfully")
-        }
-    }
     
     @IBAction func parse(sender: NSMenuItem){
         
-        screenShot = ScreenShot(indexFilePath: "/Users/nick/Desktop/clip/screenindex.pak", dataFilePath: "/Users/nick/Desktop/clip/screendata.pak")
+        let folderPath = Helper.createSnapShotDirectoryIfNoExist()
+        let indexDataPath = folderPath.stringByAppendingString("/screenindex.pak")
+        let screenDataPath = folderPath.stringByAppendingString("/screendata.pak")
+        
+        screenShot = ScreenShot(indexFilePath: indexDataPath, dataFilePath: screenDataPath)
         
         let app = NSApplication.sharedApplication()
         

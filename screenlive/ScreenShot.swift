@@ -246,7 +246,7 @@ class ScreenShot : NSCoding {
     func loadTileData(tile: ScreenTile) -> NSData? {
         if let screenData = self.screenData {
             if (tile.offset + tile.length <= screenData.length) {
-                print("tile grid:\(tile.grid) offset:\(tile.offset)  second:\(tile.timestamp)$")
+               
                 return screenData.subdataWithRange(NSMakeRange(tile.offset, tile.length))
             }
         }
