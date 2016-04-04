@@ -25,7 +25,8 @@ public extension NSData
         var stream = self.createZStream()
         var status : Int32
         
-        status = deflateInit2_(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY, ZLIB_VERSION, STREAM_SIZE)
+        //status = deflateInit2_(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS + 16, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY, ZLIB_VERSION, STREAM_SIZE)
+        status = deflateInit_(&stream, Z_DEFAULT_COMPRESSION, ZLIB_VERSION, STREAM_SIZE)
         
         if status != Z_OK {
             if let errorMessage = String.fromCString(stream.msg) {
@@ -64,8 +65,8 @@ public extension NSData
         var stream = self.createZStream()
         var status : Int32
         
-        status = inflateInit2_(&stream, 47, ZLIB_VERSION, STREAM_SIZE)
-        
+       //status = inflateInit2_(&stream, MAX_WBITS + 32, ZLIB_VERSION, STREAM_SIZE)
+       status = inflateInit_(&stream, ZLIB_VERSION, STREAM_SIZE)
         if status != Z_OK {
             if let errorMessage = String.fromCString(stream.msg) {
                 print(String(format: "Decompression failed: %@", errorMessage))

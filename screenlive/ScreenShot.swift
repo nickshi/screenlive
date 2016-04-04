@@ -191,6 +191,7 @@ class ScreenShot : NSCoding {
                     // if offset is -1, copy previous one
                     if (tile.offset == -1 && lastTile != nil) {
                         tile.cloneTileRange(lastTile!)
+                        
                     }
                     let second = Int(tile.timestamp)
                     var frame = self.frames[second]
@@ -209,7 +210,7 @@ class ScreenShot : NSCoding {
                 
                 seconds.sortInPlace({ $0 < $1 })
                 self.seconds = seconds
-                
+       
                 var prevFrame: ScreenFrame? = nil
                 for s in self.seconds {
                     
@@ -219,7 +220,7 @@ class ScreenShot : NSCoding {
                         prevFrame = frame
                     }
                     
-                    for (var i = 0; i < 64; i++) {
+                    for i in 0...63 {
                         if let tile = frame!.tiles[i] {
                             fullFrame.addTile(tile)
                         } else if let previousTile = prevFrame!.tiles[i] { // if can't find the tile from current frame
@@ -245,6 +246,7 @@ class ScreenShot : NSCoding {
     func loadTileData(tile: ScreenTile) -> NSData? {
         if let screenData = self.screenData {
             if (tile.offset + tile.length <= screenData.length) {
+                print("tile grid:\(tile.grid) offset:\(tile.offset)  second:\(tile.timestamp)$")
                 return screenData.subdataWithRange(NSMakeRange(tile.offset, tile.length))
             }
         }

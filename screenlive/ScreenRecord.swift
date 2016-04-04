@@ -14,6 +14,72 @@ protocol ScreenRecordDelegate {
     func screenRecordTimeDuration(duration:Int)
 }
 
+class Tile {
+    var second:Int = 1
+    var imageData:NSData?
+    var grid:Int = 0
+    
+    
+    init(sec:Int, grid:Int){
+        self.second = sec
+        self.grid = grid
+    }
+    
+    
+    func appendTileIndexToData(indexData:NSMutableData,imagesData:NSMutableData, inout offset:Int) {
+        let row:Int = self.grid / 8
+        let column:Int = self.grid % 8
+        
+        var wrapped_grid:Int = row<<4
+        wrapped_grid = wrapped_grid | column
+        
+        
+        var sec:UInt16 = UInt16(second)
+        indexData.appendBytes(&sec, length: 2)
+        
+        var grid:UInt8 = UInt8(wrapped_grid)
+        indexData.appendBytes(&grid, length: 1)
+        
+        indexData.appendBytes(&offset, length: 4)
+        
+        var length = imageData!.length
+        
+        indexData.appendBytes(&length, length: 4)
+        
+        
+        
+        if(offset != -1 )
+        {
+            offset += length
+            imagesData.appendBytes((imageData?.bytes)!, length: length)
+        }
+        
+    }
+    
+}
+
+
+class TilePipe {
+    var tiles:[Tile]
+    
+    var lastTile:Tile? {
+        get {
+            return self.tiles.last;
+        }
+    }
+    
+    init(){
+        tiles = [Tile]()
+        
+    }
+    
+    func addTile(tile:Tile){
+        tiles.append(tile)
+    }
+    
+    
+}
+
 class ScreenRecord:NSObject {
     var lastFrame:ScreenFrame?
     
@@ -33,6 +99,17 @@ class ScreenRecord:NSObject {
     
     var recordDelegate:ScreenRecordDelegate?
     
+    
+    var pipes:[Int:TilePipe]
+    
+    override init(){
+        pipes = [Int:TilePipe]()
+        
+        for i in 0...63 {
+            pipes[i] = TilePipe()
+        }
+    }
+    
     func beginRecord() {
         
         if let aTimer = timer {
@@ -47,7 +124,7 @@ class ScreenRecord:NSObject {
         curOffsetIndex = 0
         recording = true
         timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(ScreenRecord.captureScreen), userInfo: nil, repeats: true)
-        
+        captureScreen()
         recordDelegate?.screenRecordBegin()
     }
     
@@ -56,14 +133,11 @@ class ScreenRecord:NSObject {
             aTimer.invalidate()
             timer = nil
             
-            curSecond = 0
+            curSecond = 1
             
             recording = false
             
-            dispatch_async(seriel_queue, { () -> Void in
-                self.indexData!.gzippedData()!.writeToFile("/Users/nick/Desktop/clip/indexData.data", atomically: true)
-                self.imagesData!.writeToFile("/Users/nick/Desktop/clip/imagesData.data", atomically: true)
-            })
+            saveTilesToLocal()
         }
         
         recordDelegate?.screenRecordEnd()
@@ -77,8 +151,7 @@ class ScreenRecord:NSObject {
         if let capturedImage = image {
             let nscapturedImage = NSImage(CGImage: capturedImage,size: NSSize(width: CGFloat(CGImageGetWidth(image)), height: CGFloat(CGImageGetHeight(image))))
             
-            self.saveNSImageAsFrame(nscapturedImage, second: self.curSecond)
-            
+            self.saveTiles(nscapturedImage, second: self.curSecond)
             
             curSecond += 1
             recordDelegate?.screenRecordTimeDuration(curSecond)
@@ -86,71 +159,80 @@ class ScreenRecord:NSObject {
         }
     }
     
-    private func saveNSImageAsFrame(frameImage:NSImage, second:Int)
-    {
-        let curFrame = ScreenFrame(second: second)
+    private func saveTiles(frameImage:NSImage, second:Int){
         
         for idx in 0...63 {
+            
             let cgImage = frameImage[idx]
             
-            let nsImage = NSImage(CGImage: cgImage!, size: NSSize(width: CGFloat(CGImageGetWidth(cgImage)), height: CGFloat(CGImageGetHeight(cgImage))))
+            let pieceNSImage = NSImage(CGImage: cgImage!, size: NSSize(width: CGFloat(CGImageGetWidth(cgImage)), height: CGFloat(CGImageGetHeight(cgImage))))
             
-            let imageData = nsImage.TIFFRepresentation
+            let imageData = pieceNSImage.imagePNGRepresentation
             
-            var length = imageData!.length
-            
-            let row:Int = idx / 8
-            let column:Int = idx % 8
-            
-            var wrapped_grid:Int = row<<4
-            wrapped_grid = wrapped_grid | column
-            
-            let tile = ScreenTile(grid: wrapped_grid)
-            
-            tile.length = length
+            let tile = Tile(sec: second, grid: idx)
             
             tile.imageData = imageData
             
-            curFrame.addTile(tile)
-            
-            var sec:UInt16 = UInt16(second)
-            indexData!.appendBytes(&sec, length: 2)
-            
-            var grid:UInt8 = UInt8(wrapped_grid)
-            indexData!.appendBytes(&grid, length: 1)
-            
-            
-            if let prevFrame = lastFrame {
-                let prevTile = prevFrame.tiles[idx]
-                let isSame = prevTile?.imageData?.isEqualToData(tile.imageData!)
-              
-                if isSame == true {
-                    
-                    indexData!.appendBytes(&(prevTile!.offset), length: 4)
-                    tile.offset = prevTile!.offset
-                    
+            if let lastTile = pipes[idx]?.lastTile {
+                if lastTile.imageData?.isEqualToData(tile.imageData!) == false {
+                   
+                    pipes[idx]?.addTile(tile)
                 }
-                else
-                {
-                    indexData!.appendBytes(&curOffsetIndex, length: 4)
-                    imagesData!.appendBytes((imageData?.bytes)!, length: length)
-                    tile.offset = curOffsetIndex
-                    curOffsetIndex += length
-         
-                }
+            }
+            else {
                 
-            }
-            else
-            {
-                indexData!.appendBytes(&curOffsetIndex, length: 4)
-                imagesData!.appendBytes((imageData?.bytes)!, length: length)
-                tile.offset = curOffsetIndex
-                curOffsetIndex += length
+                 pipes[idx]?.addTile(tile)
             }
             
-            indexData!.appendBytes(&length, length: 4)
+            
         }
-        
-        lastFrame = curFrame
     }
+    
+    
+    private func saveTilesToLocal() {
+       
+        
+        dispatch_async(seriel_queue, { () -> Void in
+            
+            var dic:[NSData:[Tile]] = [NSData:[Tile]]()
+            
+            self.pipes.forEach {
+                sec, pipe in
+                
+                for tile in pipe.tiles {
+           
+                    if (dic[tile.imageData!] == nil) {dic[tile.imageData!] = [Tile]()}
+                    
+                    dic[tile.imageData!]?.append(tile)
+                    
+                   
+                    //tile.appendTileIndexToData(self.indexData!, imagesData: self.imagesData!, offset: &self.curOffsetIndex)
+                }
+            }
+            
+            for (_, tiles) in dic {
+                
+                var is_first = true;
+                for tile in tiles {
+                   
+                    if is_first {
+                       tile.appendTileIndexToData(self.indexData!, imagesData: self.imagesData!, offset: &self.curOffsetIndex)
+                    }
+                    else
+                    {
+                        var offset = -1;
+                        tile.appendTileIndexToData(self.indexData!, imagesData: self.imagesData!, offset: &offset)
+                    }
+                    
+                    is_first = false
+                }
+            }
+            
+            self.indexData!.gzippedData()!.writeToFile("/Users/nick/Desktop/clip/screenindex.pak", atomically: true)
+            self.imagesData!.writeToFile("/Users/nick/Desktop/clip/screendata.pak", atomically: true)
+        })
+        
+ 
+    }
+    
 }

@@ -17,6 +17,14 @@ extension NSImage {
         }
     }
     
+    var imagePNGRepresentation: NSData {
+        return NSBitmapImageRep(data: TIFFRepresentation!)!.representationUsingType(.NSPNGFileType, properties: [:])!
+    }
+    
+    var imageJPEGRepresentation: NSData {
+        return NSBitmapImageRep(data: TIFFRepresentation!)!.representationUsingType(.NSJPEGFileType, properties: [:])!
+    }
+    
 //    var Image8x8:[CGImageRef]? {
 //        get {
 //            let cgImage = self.CGImage

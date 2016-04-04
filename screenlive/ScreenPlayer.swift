@@ -11,7 +11,7 @@ import Cocoa
 class ScreenPlayer: NSView {
     private(set) var screenShot: ScreenShot?
     
-    var second: Int = 0
+    var second: Int = 1
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)

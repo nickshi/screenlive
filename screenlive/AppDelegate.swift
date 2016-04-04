@@ -96,7 +96,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
     
     @IBAction func parse(sender: NSMenuItem){
         
-        screenShot = ScreenShot(indexFilePath: "/Users/nick/Desktop/clip/indexData.data", dataFilePath: "/Users/nick/Desktop/clip/imagesData.data")
+        screenShot = ScreenShot(indexFilePath: "/Users/nick/Desktop/clip/screenindex.pak", dataFilePath: "/Users/nick/Desktop/clip/screendata.pak")
         
         let app = NSApplication.sharedApplication()
         
@@ -124,7 +124,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,ScreenRecordDelegate {
         
         curSecond += 1;
         
-        curSecond = max(0, min(curSecond, (screenShot?.seconds.count)!-1))
+        curSecond = max(1, min(curSecond, (screenShot?.seconds.count)! + 1))
         
     }
 
